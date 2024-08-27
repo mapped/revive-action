@@ -16,14 +16,14 @@ else
   REVIVE_ARCH="amd64"
 fi
 
-mkdir -p revive
-cd revive
-
 curl -sSL -o revive.tar.gz https://github.com/mgechev/revive/releases/download/$REVIVE_VERSION/revive_linux_$REVIVE_ARCH.tar.gz
 tar -xvzf revive.tar.gz
 
-REVIVE="$GITHUB_ACTION_PATH/revive/revive"
+REVIVE="$GITHUB_ACTION_PATH/revive"
 echo "Downloaded revive binary to $REVIVE"
+
+# TODO: Remove me
+ls -al $GITHUB_ACTION_PATH
 
 cd "$GITHUB_WORKSPACE"
 
