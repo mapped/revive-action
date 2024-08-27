@@ -3,6 +3,8 @@
 set -e
 set -o pipefail
 
+cd $GITHUB_ACTION_PATH
+
 REVIVE_VERSION="v1.3.9"
 
 echo "Downloading revive $REVIVE_VERSION binary..."
