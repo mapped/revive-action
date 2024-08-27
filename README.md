@@ -14,7 +14,7 @@ Prepare your workflow by adding the following steps:
 
 ```YAML
 - name: Check out code into the Go module directory
-  uses: actions/checkout@v2
+  uses: actions/checkout@v4
 
 - name: Set up Go
   uses: actions/setup-go@v5
