@@ -3,26 +3,13 @@
 set -e
 set -o pipefail
 
-cd $GITHUB_ACTION_PATH
-
 REVIVE_VERSION="v1.3.9"
 
-echo "Downloading revive $REVIVE_VERSION binary..."
-
-# Download and untar revive action from GitHub
-
-ARCH=$(uname -m)
-if [ "$ARCH" = "aarch64" ]; then
-  REVIVE_ARCH="arm64"
-else
-  REVIVE_ARCH="amd64"
+if ! command -v revive &> /dev/null; then
+  echo "Revive not found. Installing revive..."
+  go install github.com/mgechev/revive@$REVIVE_VERSION
+  echo "Revive installed"
 fi
-
-curl -sSL -o revive.tar.gz https://github.com/mgechev/revive/releases/download/$REVIVE_VERSION/revive_linux_$REVIVE_ARCH.tar.gz
-tar -xvzf revive.tar.gz
-
-REVIVE="$GITHUB_ACTION_PATH/revive"
-echo "Downloaded revive binary to $REVIVE"
 
 cd "$GITHUB_WORKSPACE"
 
@@ -41,4 +28,4 @@ if [ ! -z "${INPUT_CONFIG}" ]; then CONFIG="-config=$INPUT_CONFIG"; fi
 
 echo "Running revive..."
 
-eval "$REVIVE $CONFIG $EXCLUDES -formatter ndjson $LINT_PATH | $REVIVE_ACTION"
+eval "revive $CONFIG $EXCLUDES -formatter ndjson $LINT_PATH | $REVIVE_ACTION"
