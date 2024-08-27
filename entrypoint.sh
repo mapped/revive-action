@@ -3,10 +3,31 @@
 set -e
 set -o pipefail
 
+REVIVE_VERSION="v1.3.9"
+
+echo "Downloading revive $REVIVE_VERSION binary..."
+
+# Download and untar revive action from GitHub
+
+ARCH=$(uname -m)
+if [ "$ARCH" = "aarch64" ]; then
+  REVIVE_ARCH="arm64"
+else
+  REVIVE_ARCH="amd64"
+fi
+
+mkdir -p revive
+cd revive
+
+curl -sSL -o revive.tar.gz https://github.com/mgechev/revive/releases/download/$REVIVE_VERSION/revive_linux_$REVIVE_ARCH.tar.gz
+tar -xvzf revive.tar.gz
+
+REVIVE="$GITHUB_ACTION_PATH/revive/revive"
+echo "Downloaded revive binary to $REVIVE_ACTION"
+
 cd "$GITHUB_WORKSPACE"
 
-ACTION_VERSION=$(revive-action -version)
-REVIVE_VERSION=$(revive -version | gawk '{match($0,"v[0-9].[0-9].[0-9]",a)}END{print a[0]}')
+REVIVE_ACTION="go run $GITHUB_ACTION_PATH/main.go"
 
 LINT_PATH="./..."
 
@@ -19,7 +40,6 @@ done
 
 if [ ! -z "${INPUT_CONFIG}" ]; then CONFIG="-config=$INPUT_CONFIG"; fi
 
-echo "ACTION: $ACTION_VERSION
-REVIVE: $REVIVE_VERSION"
+echo "Running revive..."
 
-eval "revive $CONFIG $EXCLUDES -formatter ndjson $LINT_PATH | revive-action"
+eval "$REVIVE_ACTION $CONFIG $EXCLUDES -formatter ndjson $LINT_PATH | $REVIVE_ACTION"

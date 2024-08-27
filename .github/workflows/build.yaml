@@ -1,36 +1,48 @@
 name: Build
-on:
-  release:
-    types: [published]
+on: 
+  push:
+
+permissions:
+  contents: write
 
 jobs:
-
   build:
-    name: Build image
+    name: Build
     runs-on: ubuntu-latest
     steps:
 
-      - name: Login to Registry
-        run: |
-          echo ${{ secrets.DOCKER_PASSWORD }} | \
-          docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
 
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v4
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v4
 
-      - name: Build image
-        run: |
-          export VERSION=${GITHUB_REF#refs/tags/}
-          export VERSION_MINOR=$(echo ${VERSION} | awk '{match($0,"v[0-9].[0-9]",a)}END{print a[0]}')
-          export VERSION_MAJOR=$(echo ${VERSION} | awk '{match($0,"v[0-9]",a)}END{print a[0]}')
-          docker build --build-arg ACTION_VERSION=${VERSION} \
-          -t morphy/revive-action \
-          -t morphy/revive-action:${VERSION} \
-          -t morphy/revive-action:${VERSION_MINOR} \
-          -t morphy/revive-action:${VERSION_MAJOR} .
+    - name: Build
+      run: go build -v ./...
 
-      - name: Publish image
-        run: docker push --all-tags morphy/revive-action
+    - name: Release branch name
+      id: release_branch_name
+      run: |
+        branch=latest
 
-      - name: Logout
-        run: docker logout
+        if [[ $GITHUB_REF != refs/heads/main ]]; then
+          branch=dev-${GITHUB_REF#refs/heads/}
+        fi
+
+        echo "branch=$branch"
+        echo "branch=$branch" >> $GITHUB_OUTPUT
+
+    - name: Copy release files
+      run: | 
+        mkdir -p release
+        cp go.mod go.sum main.go action.yaml entrypoint.sh release/
+        
+    - name: Publish into release branch
+      uses: s0/git-publish-subdir-action@v2.6.0
+      env:
+        REPO: self
+        BRANCH: ${{ steps.release_branch_name.outputs.branch }}
+        FOLDER: release
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

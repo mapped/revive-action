@@ -1,28 +1,32 @@
 # Revive Action
 
+👉Same as [morphy2k/revive-action](https://github.com/marketplace/actions/revive-action) but not using Docker.
+
+Problems when using Docker:
+1. Takes time pull the image.
+1. Cannot upgrade Go quickly.
+
 This Action runs [Revive](https://github.com/mgechev/revive) on your [Go](https://golang.org/) code and adds annotations to the check.
 
 ## Usage
 
-Checkout
+Prepare your workflow by adding the following steps:
 
 ```YAML
 - name: Check out code into the Go module directory
   uses: actions/checkout@v2
+
+- name: Set up Go
+  uses: actions/setup-go@v5
+  with:
+    go-version: '1.22'
 ```
 
-Use by pulling pre-built image **(recommended)**
-
-```YAML
-- name: Run Revive Action by pulling pre-built image
-  uses: docker://morphy/revive-action:v2
-```
-
-Use by building from repository
+Run
 
 ```YAML
 - name: Run Revive Action by building from repository
-  uses: morphy2k/revive-action@v2
+  uses: mapped/revive-action@master
 ```
 
 Configuration
