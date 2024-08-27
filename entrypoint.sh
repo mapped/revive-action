@@ -24,9 +24,6 @@ tar -xvzf revive.tar.gz
 REVIVE="$GITHUB_ACTION_PATH/revive"
 echo "Downloaded revive binary to $REVIVE"
 
-# TODO: Remove me
-ls -al $GITHUB_ACTION_PATH
-
 cd "$GITHUB_WORKSPACE"
 
 REVIVE_ACTION="go run $GITHUB_ACTION_PATH/main.go"
