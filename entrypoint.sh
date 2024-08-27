@@ -23,7 +23,7 @@ curl -sSL -o revive.tar.gz https://github.com/mgechev/revive/releases/download/$
 tar -xvzf revive.tar.gz
 
 REVIVE="$GITHUB_ACTION_PATH/revive/revive"
-echo "Downloaded revive binary to $REVIVE_ACTION"
+echo "Downloaded revive binary to $REVIVE"
 
 cd "$GITHUB_WORKSPACE"
 
@@ -42,4 +42,4 @@ if [ ! -z "${INPUT_CONFIG}" ]; then CONFIG="-config=$INPUT_CONFIG"; fi
 
 echo "Running revive..."
 
-eval "$REVIVE_ACTION $CONFIG $EXCLUDES -formatter ndjson $LINT_PATH | $REVIVE_ACTION"
+eval "$REVIVE $CONFIG $EXCLUDES -formatter ndjson $LINT_PATH | $REVIVE_ACTION"
