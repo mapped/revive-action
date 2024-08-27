@@ -19,14 +19,10 @@ Prepare your workflow by adding the following steps:
 - name: Set up Go
   uses: actions/setup-go@v5
   with:
-    go-version: '1.22'
-```
+    go-version: '1.23'
 
-Run
-
-```YAML
-- name: Run Revive Action by building from repository
-  uses: mapped/revive-action@master
+- name: Run Revive Action
+  uses: mapped/revive-action@latest
 ```
 
 Configuration
